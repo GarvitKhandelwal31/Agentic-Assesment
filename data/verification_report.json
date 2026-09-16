@@ -1,0 +1,1072 @@
+{
+  "sample_size": 20,
+  "first_pass_accuracy": 0.99,
+  "field_accuracy": {
+    "auth_methods": {
+      "accuracy": 0.95,
+      "agree": 19,
+      "disagree": 1,
+      "unknown": 0
+    },
+    "self_serve": {
+      "accuracy": 1.0,
+      "agree": 20,
+      "disagree": 0,
+      "unknown": 0
+    },
+    "api_type": {
+      "accuracy": 1.0,
+      "agree": 20,
+      "disagree": 0,
+      "unknown": 0
+    },
+    "buildability": {
+      "accuracy": 1.0,
+      "agree": 20,
+      "disagree": 0,
+      "unknown": 0
+    },
+    "mcp_exists": {
+      "accuracy": 1.0,
+      "agree": 20,
+      "disagree": 0,
+      "unknown": 0
+    }
+  },
+  "records": [
+    {
+      "id": 2,
+      "name": "HubSpot",
+      "category": "CRM and Sales",
+      "primary_findings": {
+        "auth_methods": [
+          "OAuth2",
+          "Bearer Token"
+        ],
+        "self_serve": "yes",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 1,
+      "name": "Salesforce",
+      "category": "CRM and Sales",
+      "primary_findings": {
+        "auth_methods": [
+          "OAuth2",
+          "Bearer Token"
+        ],
+        "self_serve": "yes",
+        "api_type": "REST+GraphQL",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 15,
+      "name": "Pylon",
+      "category": "Support and Helpdesk",
+      "primary_findings": {
+        "auth_methods": [
+          "API Key",
+          "Bearer Token"
+        ],
+        "self_serve": "gated",
+        "api_type": "REST",
+        "buildability": "needs-outreach",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 14,
+      "name": "Front",
+      "category": "Support and Helpdesk",
+      "primary_findings": {
+        "auth_methods": [
+          "OAuth2",
+          "Bearer Token"
+        ],
+        "self_serve": "partial",
+        "api_type": "REST",
+        "buildability": "needs-outreach",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 24,
+      "name": "Lark (Larksuite)",
+      "category": "Communications and Messaging",
+      "primary_findings": {
+        "auth_methods": [
+          "Bearer Token"
+        ],
+        "self_serve": "yes",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "DISAGREE",
+          "note": "Lark uses tenant_access_token and user_access_token (Bearer tokens obtained via app credentials/OAuth2), but authentication is primarily initialized via App ID and App Secret rather than a static Bearer token directly."
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 0.95,
+        "corrected_values": {
+          "auth_methods": [
+            "App ID/App Secret",
+            "OAuth 2.0",
+            "Bearer Token"
+          ]
+        }
+      },
+      "field_scores": {
+        "auth_methods": "DISAGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 23,
+      "name": "Zoho Cliq",
+      "category": "Communications and Messaging",
+      "primary_findings": {
+        "auth_methods": [
+          "OAuth2"
+        ],
+        "self_serve": "yes",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 32,
+      "name": "Meta Ads",
+      "category": "Marketing Ads Email and Social",
+      "primary_findings": {
+        "auth_methods": [
+          "OAuth2"
+        ],
+        "self_serve": "yes",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 39,
+      "name": "Threads (Meta)",
+      "category": "Marketing Ads Email and Social",
+      "primary_findings": {
+        "auth_methods": [
+          "OAuth2"
+        ],
+        "self_serve": "yes",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 42,
+      "name": "WooCommerce",
+      "category": "Ecommerce",
+      "primary_findings": {
+        "auth_methods": [
+          "OAuth2",
+          "Basic Auth"
+        ],
+        "self_serve": "yes",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 47,
+      "name": "Ecwid",
+      "category": "Ecommerce",
+      "primary_findings": {
+        "auth_methods": [
+          "OAuth2",
+          "Bearer Token"
+        ],
+        "self_serve": "partial",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 51,
+      "name": "DataForSEO",
+      "category": "Data SEO and Scraping",
+      "primary_findings": {
+        "auth_methods": [
+          "Basic Auth"
+        ],
+        "self_serve": "yes",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 60,
+      "name": "Clay",
+      "category": "Data SEO and Scraping",
+      "primary_findings": {
+        "auth_methods": [
+          "API Key"
+        ],
+        "self_serve": "partial",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 62,
+      "name": "Vercel",
+      "category": "Developer Infra and Data Platforms",
+      "primary_findings": {
+        "auth_methods": [
+          "Bearer Token"
+        ],
+        "self_serve": "yes",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 64,
+      "name": "Cloudflare",
+      "category": "Developer Infra and Data Platforms",
+      "primary_findings": {
+        "auth_methods": [
+          "API Key",
+          "Bearer Token"
+        ],
+        "self_serve": "yes",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 74,
+      "name": "Jira",
+      "category": "Productivity and Project Management",
+      "primary_findings": {
+        "auth_methods": [
+          "OAuth2",
+          "Basic Auth"
+        ],
+        "self_serve": "yes",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 79,
+      "name": "Smartsheet",
+      "category": "Productivity and Project Management",
+      "primary_findings": {
+        "auth_methods": [
+          "OAuth2",
+          "Bearer Token"
+        ],
+        "self_serve": "partial",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 90,
+      "name": "PitchBook",
+      "category": "Finance and Fintech",
+      "primary_findings": {
+        "auth_methods": [
+          "API Key",
+          "OAuth2"
+        ],
+        "self_serve": "gated",
+        "api_type": "REST",
+        "buildability": "needs-outreach",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 81,
+      "name": "Stripe",
+      "category": "Finance and Fintech",
+      "primary_findings": {
+        "auth_methods": [
+          "Bearer Token"
+        ],
+        "self_serve": "yes",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 99,
+      "name": "YouTube Transcript API",
+      "category": "AI Research and Media-native",
+      "primary_findings": {
+        "auth_methods": [
+          "API Key"
+        ],
+        "self_serve": "yes",
+        "api_type": "REST",
+        "buildability": "ready",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    },
+    {
+      "id": 94,
+      "name": "Consensus",
+      "category": "AI Research and Media-native",
+      "primary_findings": {
+        "auth_methods": [
+          "API Key"
+        ],
+        "self_serve": "gated",
+        "api_type": "REST",
+        "buildability": "needs-outreach",
+        "mcp_exists": false
+      },
+      "verification_check": {
+        "auth_methods": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "self_serve": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "api_type": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "buildability": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "mcp_exists": {
+          "verdict": "AGREE",
+          "note": ""
+        },
+        "overall_confidence": 1.0,
+        "corrected_values": {}
+      },
+      "field_scores": {
+        "auth_methods": "AGREE",
+        "self_serve": "AGREE",
+        "api_type": "AGREE",
+        "buildability": "AGREE",
+        "mcp_exists": "AGREE"
+      }
+    }
+  ],
+  "human_checks_needed": [
+    "Lark (Larksuite)"
+  ],
+  "post_correction_accuracy": 1.0,
+  "corrections_made": [
+    {
+      "app": "Lark (Larksuite)",
+      "field": "auth_methods",
+      "from": [
+        "Bearer Token"
+      ],
+      "to": [
+        "OAuth2",
+        "Bearer Token"
+      ],
+      "reason": "OAuth2 flow required to obtain token; agent omitted OAuth2"
+    },
+    {
+      "app": "Pumble",
+      "field": "multiple",
+      "from": {
+        "auth_methods": [
+          "OAuth2",
+          "API Key"
+        ],
+        "self_serve": "partial",
+        "self_serve_notes": "Free tier is available, but API or integrations may require specific plans or webhooks configuration.",
+        "mcp_exists": false,
+        "mcp_notes": "",
+        "buildability": "needs-outreach",
+        "main_blocker": "Limited public documentation on explicit standalone API endpoints for general developer use outside of webhooks/bots.",
+        "agent_confidence": 0.7,
+        "verified": false,
+        "verification_notes": ""
+      },
+      "to": {
+        "auth_methods": [
+          "API Key"
+        ],
+        "self_serve": "yes",
+        "self_serve_notes": "Free plan includes API access.",
+        "mcp_exists": true,
+        "mcp_notes": "Official MCP server available.",
+        "buildability": "ready",
+        "main_blocker": "none",
+        "agent_confidence": 0.95,
+        "verified": true,
+        "verification_notes": "Human-verified: has REST API (API Key), MCP server, free self-serve. Agent was wrong (said needs-outreach, no MCP)."
+      },
+      "reason": "Human-verified: has REST API (API Key), MCP server, free self-serve. Agent was wrong (said needs-outreach, no MCP)."
+    },
+    {
+      "app": "iPayX",
+      "field": "multiple",
+      "from": {
+        "auth_methods": [
+          "No Auth"
+        ],
+        "self_serve": "unknown",
+        "self_serve_notes": "No public developer API documentation or self-serve API portal is currently available on the website.",
+        "api_type": "No-API",
+        "mcp_exists": false,
+        "mcp_notes": "",
+        "buildability": "no-api",
+        "main_blocker": "No public developer API or documentation provided.",
+        "verified": false,
+        "verification_notes": ""
+      },
+      "to": {
+        "auth_methods": [
+          "API Key"
+        ],
+        "self_serve": "yes",
+        "self_serve_notes": "Self-serve API key available.",
+        "api_type": "REST",
+        "mcp_exists": true,
+        "mcp_notes": "MCP server available.",
+        "buildability": "ready",
+        "main_blocker": "none",
+        "verified": true,
+        "verification_notes": "Human-verified: has REST API (API Key), MCP server, self-serve. Agent was wrong (said no-api, no public docs)."
+      },
+      "reason": "Human-verified: has REST API (API Key), MCP server, self-serve. Agent was wrong (said no-api, no public docs)."
+    },
+    {
+      "app": "Higgsfield",
+      "field": "multiple",
+      "from": {
+        "self_serve": "unknown",
+        "self_serve_notes": "No explicit self-serve API documentation or developer portal found on the main site.",
+        "api_breadth": "unknown",
+        "mcp_exists": false,
+        "mcp_notes": "",
+        "buildability": "needs-outreach",
+        "main_blocker": "No publicly available API documentation or self-serve developer portal.",
+        "agent_confidence": 0.4,
+        "verified": false,
+        "verification_notes": ""
+      },
+      "to": {
+        "self_serve": "yes",
+        "self_serve_notes": "Self-serve API key available on registration.",
+        "api_breadth": "moderate",
+        "mcp_exists": true,
+        "mcp_notes": "Official MCP server available.",
+        "buildability": "ready",
+        "main_blocker": "none",
+        "agent_confidence": 0.95,
+        "verified": true,
+        "verification_notes": "Human-verified: has REST API with API Key + Secret, MCP server, self-serve. Agent was wrong (said needs-outreach, no MCP)."
+      },
+      "reason": "Human-verified: has REST API with API Key + Secret, MCP server, self-serve. Agent was wrong (said needs-outreach, no MCP)."
+    }
+  ],
+  "human_verified_by": "User (Garvi)",
+  "human_verification_date": "2026-09-16",
+  "apps_human_checked": 10,
+  "agent_errors_found": 3
+}
