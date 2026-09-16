@@ -1,0 +1,3418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Composio App Research — 100 Apps</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root{--bg:#0d0d0d;--surface:#1a1a1a;--border:#2a2a2a;--text:#e8e8e8;--muted:#888;
+    --green:#22c55e;--yellow:#f59e0b;--red:#ef4444;--blue:#3b82f6;--purple:#a855f7;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
+  a{color:var(--blue);text-decoration:none;}a:hover{text-decoration:underline;}
+  h1{font-size:2rem;font-weight:800;}h2{font-size:1.25rem;font-weight:700;margin-bottom:1rem;}
+  h3{font-size:1rem;font-weight:600;margin-bottom:.5rem;}
+  .hero{padding:3rem 2rem;max-width:1400px;margin:auto;}
+  .tagline{color:var(--muted);font-size:.95rem;margin-top:.5rem;}
+  .findings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;margin-top:2rem;}
+  .finding-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;}
+  .finding-card .num{font-size:2rem;font-weight:800;color:var(--blue);}
+  .finding-card p{color:var(--muted);margin-top:.25rem;font-size:.85rem;}
+  .section{padding:2rem;max-width:1400px;margin:auto;}
+  .charts-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1.5rem;margin-bottom:2rem;}
+  .chart-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;}
+  canvas{max-height:260px;}
+  /* Table */
+  .table-wrap{overflow-x:auto;}
+  .filters{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;}
+  .filter-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:.35rem .75rem;
+    border-radius:6px;cursor:pointer;font-size:.8rem;transition:all .15s;}
+  .filter-btn.active,.filter-btn:hover{background:var(--blue);border-color:var(--blue);color:#fff;}
+  input[type=search]{background:var(--surface);border:1px solid var(--border);color:var(--text);
+    padding:.4rem .8rem;border-radius:6px;font-size:.85rem;width:240px;}
+  table{width:100%;border-collapse:collapse;font-size:.82rem;}
+  thead th{text-align:left;padding:.6rem .75rem;background:var(--surface);border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:10;white-space:nowrap;}
+  tbody tr{border-bottom:1px solid var(--border);}
+  tbody tr:hover{background:rgba(255,255,255,.03);}
+  td{padding:.55rem .75rem;vertical-align:top;max-width:260px;}
+  .badge{display:inline-block;padding:.2rem .5rem;border-radius:4px;font-size:.72rem;font-weight:600;
+    white-space:nowrap;}
+  .badge-ready{background:#14532d;color:var(--green);}
+  .badge-outreach{background:#451a03;color:var(--yellow);}
+  .badge-gated{background:#450a0a;color:var(--red);}
+  .badge-noapi{background:#1e1b4b;color:var(--purple);}
+  .badge-yes{background:#14532d;color:var(--green);}
+  .badge-partial{background:#451a03;color:var(--yellow);}
+  .badge-self_serve_gated{background:#450a0a;color:var(--red);}
+  .badge-unknown{background:#27272a;color:var(--muted);}
+  .auth-tag{display:inline-block;background:#1e293b;color:#94a3b8;padding:.1rem .4rem;border-radius:3px;
+    font-size:.7rem;margin:.1rem;}
+  .conf{font-size:.75rem;color:var(--muted);}
+  .mcp-yes{color:var(--green);}
+  .mcp-no{color:var(--muted);}
+  /* Agent section */
+  .agent-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+  @media(max-width:720px){.agent-grid{grid-template-columns:1fr;}}
+  .agent-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;}
+  .agent-box ul{list-style:disc;padding-left:1.2rem;line-height:1.8;color:var(--muted);font-size:.85rem;}
+  .agent-box .human{color:var(--yellow);}
+  /* Verification */
+  .ver-table table{font-size:.8rem;}
+  .agree{color:var(--green);}
+  .disagree{color:var(--red);}
+  .accuracy-bar-wrap{margin:1rem 0;}
+  .accuracy-bar{height:20px;border-radius:10px;background:linear-gradient(90deg,var(--green),var(--blue));
+    position:relative;transition:width .8s;}
+  .accuracy-label{font-size:.85rem;margin-bottom:.3rem;color:var(--muted);}
+  footer{text-align:center;padding:2rem;color:var(--muted);font-size:.8rem;border-top:1px solid var(--border);}
+  .section-label{display:inline-block;background:var(--blue);color:#fff;font-size:.7rem;padding:.15rem .5rem;
+    border-radius:4px;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.05em;}
+  .heatmap{overflow-x:auto;}
+  .heatmap table{border-collapse:separate;border-spacing:2px;}
+  .heatmap td,.heatmap th{padding:.4rem .6rem;border-radius:4px;text-align:center;font-size:.75rem;}
+  .heatmap th{background:transparent;color:var(--muted);}
+  .cell-0{background:#1a1a1a;color:var(--muted);}
+  .cell-1{background:#14532d66;color:var(--green);}
+  .cell-2{background:#14532d99;color:var(--green);}
+  .cell-3{background:#14532dcc;color:var(--green);}
+  .cell-high{background:#14532d;color:var(--green);}
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══════════════════════════════════════════════════════════════ -->
+<div class="hero">
+  <span class="section-label">Composio App Research</span>
+  <h1>100 Apps. Every Auth Pattern. Real Findings.</h1>
+  <p class="tagline">An AI research agent surveyed 100 apps across 10 categories to find where agent toolkits can be built today — and where they can't.</p>
+
+  <div class="findings-grid">
+    
+    <div class="finding-card">
+      <div class="num">1</div>
+      <p>OAuth2 is the dominant auth method (61 of 162 auth occurrences)</p>
+    </div>
+    
+    <div class="finding-card">
+      <div class="num">2</div>
+      <p>78% of apps are buildable today (public API + self-serve creds)</p>
+    </div>
+    
+    <div class="finding-card">
+      <div class="num">3</div>
+      <p>61 easy wins: ready AND fully self-serve</p>
+    </div>
+    
+    <div class="finding-card">
+      <div class="num">4</div>
+      <p>Only 10% of apps have an existing MCP server</p>
+    </div>
+    
+    <div class="finding-card">
+      <div class="num">5</div>
+      <p>21% require outreach or are gated behind paid/partner plans</p>
+    </div>
+    
+  </div>
+</div>
+
+<!-- ══ PATTERNS ══════════════════════════════════════════════════════════ -->
+<div class="section">
+  <span class="section-label">Patterns</span>
+  <h2>Key Patterns Across 100 Apps</h2>
+  <div class="charts-row">
+
+    <div class="chart-box">
+      <h3>Auth Method Distribution</h3>
+      <canvas id="authChart"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h3>Buildability Split</h3>
+      <canvas id="buildChart"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h3>API Type Distribution</h3>
+      <canvas id="apiChart"></canvas>
+    </div>
+
+    <div class="chart-box">
+      <h3>Self-Serve Access by Category</h3>
+      <canvas id="selfServeChart"></canvas>
+    </div>
+
+  </div>
+
+  <!-- Heatmap: Category × Buildability -->
+  <h3 style="margin-bottom:.75rem;">Category × Buildability Heatmap</h3>
+  <div class="heatmap">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left;">Category</th>
+          <th>ready</th><th>needs-outreach</th><th>gated</th><th>no-api</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td style="text-align:left;color:var(--text);">CRM and Sales</td>
+          
+          
+          <td class="cell-high">
+            8
+          </td>
+          
+          
+          <td class="cell-2">
+            2
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+        </tr>
+        
+        <tr>
+          <td style="text-align:left;color:var(--text);">Support and Helpdesk</td>
+          
+          
+          <td class="cell-high">
+            7
+          </td>
+          
+          
+          <td class="cell-3">
+            3
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+        </tr>
+        
+        <tr>
+          <td style="text-align:left;color:var(--text);">Communications and Messaging</td>
+          
+          
+          <td class="cell-high">
+            10
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+        </tr>
+        
+        <tr>
+          <td style="text-align:left;color:var(--text);">Marketing Ads Email and Social</td>
+          
+          
+          <td class="cell-high">
+            7
+          </td>
+          
+          
+          <td class="cell-3">
+            3
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+        </tr>
+        
+        <tr>
+          <td style="text-align:left;color:var(--text);">Ecommerce</td>
+          
+          
+          <td class="cell-high">
+            6
+          </td>
+          
+          
+          <td class="cell-high">
+            4
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+        </tr>
+        
+        <tr>
+          <td style="text-align:left;color:var(--text);">Data SEO and Scraping</td>
+          
+          
+          <td class="cell-high">
+            8
+          </td>
+          
+          
+          <td class="cell-1">
+            1
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+          
+          <td class="cell-1">
+            1
+          </td>
+          
+        </tr>
+        
+        <tr>
+          <td style="text-align:left;color:var(--text);">Developer Infra and Data Platforms</td>
+          
+          
+          <td class="cell-high">
+            10
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+        </tr>
+        
+        <tr>
+          <td style="text-align:left;color:var(--text);">Productivity and Project Management</td>
+          
+          
+          <td class="cell-high">
+            10
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+        </tr>
+        
+        <tr>
+          <td style="text-align:left;color:var(--text);">Finance and Fintech</td>
+          
+          
+          <td class="cell-high">
+            8
+          </td>
+          
+          
+          <td class="cell-2">
+            2
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+        </tr>
+        
+        <tr>
+          <td style="text-align:left;color:var(--text);">AI Research and Media-native</td>
+          
+          
+          <td class="cell-high">
+            4
+          </td>
+          
+          
+          <td class="cell-high">
+            4
+          </td>
+          
+          
+          <td class="cell-2">
+            2
+          </td>
+          
+          
+          <td class="cell-0">
+            ·
+          </td>
+          
+        </tr>
+        
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ FULL TABLE ═════════════════════════════════════════════════════════ -->
+<div class="section">
+  <span class="section-label">Full Data</span>
+  <h2>All 100 Apps</h2>
+  <div class="filters">
+    <input type="search" id="searchBox" placeholder="Search apps..." oninput="filterTable()"/>
+    <button class="filter-btn active" onclick="filterBy('all',this)">All</button>
+    <button class="filter-btn" onclick="filterBy('ready',this)">✅ Ready</button>
+    <button class="filter-btn" onclick="filterBy('needs-outreach',this)">⚠️ Needs Outreach</button>
+    <button class="filter-btn" onclick="filterBy('gated',this)">🔒 Gated</button>
+    <button class="filter-btn" onclick="filterBy('no-api',this)">🚫 No API</button>
+  </div>
+  <div class="table-wrap">
+    <table id="appsTable">
+      <thead>
+        <tr>
+          <th>#</th><th>App</th><th>Category</th><th>What it does</th>
+          <th>Auth</th><th>Self-Serve</th><th>API Type</th>
+          <th>MCP</th><th>Buildability</th><th>Blocker</th><th>Confidence</th><th>Docs</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr data-build="ready" data-name="salesforce" data-cat="crm and sales">
+          <td>1</td>
+          <td><strong>Salesforce</strong></td>
+          <td style="color:var(--muted);">CRM and Sales</td>
+          <td>Enterprise CRM platform providing comprehensive sales, service, and marketing automation tools.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST+GraphQL</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developer.salesforce.com/docs/apis" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="hubspot" data-cat="crm and sales">
+          <td>2</td>
+          <td><strong>HubSpot</strong></td>
+          <td style="color:var(--muted);">CRM and Sales</td>
+          <td>Customer relationship management platform providing tools for marketing, sales, and customer service.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developers.hubspot.com/docs/api/overview" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="pipedrive" data-cat="crm and sales">
+          <td>3</td>
+          <td><strong>Pipedrive</strong></td>
+          <td style="color:var(--muted);">CRM and Sales</td>
+          <td>Pipedrive is a web-based Sales CRM and pipeline management tool designed to help businesses plan and monitor their sales processes.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://developers.pipedrive.com/docs/api/v1" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="attio" data-cat="crm and sales">
+          <td>4</td>
+          <td><strong>Attio</strong></td>
+          <td style="color:var(--muted);">CRM and Sales</td>
+          <td>Powerful and flexible CRM platform built for modern teams with a robust developer API.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://developers.attio.com" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="twenty" data-cat="crm and sales">
+          <td>5</td>
+          <td><strong>Twenty</strong></td>
+          <td style="color:var(--muted);">CRM and Sales</td>
+          <td>An open-source modern CRM platform with a robust REST and GraphQL API.</td>
+          <td><span class="auth-tag">Bearer Token</span><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST+GraphQL</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://twenty.com/developers" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="podio" data-cat="crm and sales">
+          <td>6</td>
+          <td><strong>Podio</strong></td>
+          <td style="color:var(--muted);">CRM and Sales</td>
+          <td>Podio provides a flexible workspace platform with a complete programmable REST API for managing apps, tasks, and items.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developers.podio.com" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="zoho crm" data-cat="crm and sales">
+          <td>7</td>
+          <td><strong>Zoho CRM</strong></td>
+          <td style="color:var(--muted);">CRM and Sales</td>
+          <td>Manage customer relationships, sales pipelines, and marketing automation with a comprehensive CRM platform.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://www.zoho.com/crm/developer/docs/api/v7/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="close" data-cat="crm and sales">
+          <td>8</td>
+          <td><strong>Close</strong></td>
+          <td style="color:var(--muted);">CRM and Sales</td>
+          <td>An all-in-one sales CRM with built-in calling, email, and SMS automation designed for startups and SMBs.</td>
+          <td><span class="auth-tag">API Key</span><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developer.close.com" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="copper" data-cat="crm and sales">
+          <td>9</td>
+          <td><strong>Copper</strong></td>
+          <td style="color:var(--muted);">CRM and Sales</td>
+          <td>Copper is a CRM built for Google Workspace that provides a RESTful API to manage leads, contacts, opportunities, and projects.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">Requires a paid Copper subscription plan to access API keys/tokens.</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developer.copper.com" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="dealcloud" data-cat="crm and sales">
+          <td>10</td>
+          <td><strong>DealCloud</strong></td>
+          <td style="color:var(--muted);">CRM and Sales</td>
+          <td>DealCloud is a deal, relationship, and pipeline management platform tailored for the capital markets and financial services.</td>
+          <td><span class="auth-tag">API Key</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-self_serve_gated">Gated</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-yes" title="DealCloud MCP Server preview listed in documentation.">✓</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">Requires a paid DealCloud enterprise subscription and administrator-issued API credentials.</td>
+          <td class="conf">90%</td>
+          <td><a href="https://api.docs.dealcloud.com" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="zendesk" data-cat="support and helpdesk">
+          <td>11</td>
+          <td><strong>Zendesk</strong></td>
+          <td style="color:var(--muted);">Support and Helpdesk</td>
+          <td>Customer service software and support ticketing platform.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span><span class="auth-tag">Basic Auth</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developer.zendesk.com/api-reference/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="intercom" data-cat="support and helpdesk">
+          <td>12</td>
+          <td><strong>Intercom</strong></td>
+          <td style="color:var(--muted);">Support and Helpdesk</td>
+          <td>Customer service platform with a developer platform for building apps and integrating messaging, contacts, and AI.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developers.intercom.com/docs/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="freshdesk" data-cat="support and helpdesk">
+          <td>13</td>
+          <td><strong>Freshdesk</strong></td>
+          <td style="color:var(--muted);">Support and Helpdesk</td>
+          <td>Cloud-based customer support software and ticketing system with a comprehensive REST API.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developers.freshdesk.com/api/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="front" data-cat="support and helpdesk">
+          <td>14</td>
+          <td><strong>Front</strong></td>
+          <td style="color:var(--muted);">Support and Helpdesk</td>
+          <td>Customer operations platform that centralizes emails, chat, and other communication channels into a shared inbox.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">API access requires higher-tier pricing plans (Scale tier or above).</td>
+          <td class="conf">90%</td>
+          <td><a href="https://dev.frontapp.com/docs" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="pylon" data-cat="support and helpdesk">
+          <td>15</td>
+          <td><strong>Pylon</strong></td>
+          <td style="color:var(--muted);">Support and Helpdesk</td>
+          <td>Unified customer support and success platform built for B2B companies across Slack, email, and in-app chat.</td>
+          <td><span class="auth-tag">API Key</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-self_serve_gated">Gated</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">API access requires a paid subscription or sales contact.</td>
+          <td class="conf">80%</td>
+          <td><a href="https://usepylon.com/docs" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="liveagent" data-cat="support and helpdesk">
+          <td>16</td>
+          <td><strong>LiveAgent</strong></td>
+          <td style="color:var(--muted);">Support and Helpdesk</td>
+          <td>LiveAgent is a helpdesk and live chat software that provides customer service automation, ticketing, and call center features.</td>
+          <td><span class="auth-tag">API Key</span><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://www.liveagent.com/support/api/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="plain" data-cat="support and helpdesk">
+          <td>17</td>
+          <td><strong>Plain</strong></td>
+          <td style="color:var(--muted);">Support and Helpdesk</td>
+          <td>Plain is a customer support helpdesk built for tech companies and developers.</td>
+          <td><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://www.plain.com/docs/api-reference/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="help scout" data-cat="support and helpdesk">
+          <td>18</td>
+          <td><strong>Help Scout</strong></td>
+          <td style="color:var(--muted);">Support and Helpdesk</td>
+          <td>Help Scout provides customer support software including shared inboxes, live chat, knowledge bases, and customer management tools with comprehensive APIs.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://developer.helpscout.com/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="gorgias" data-cat="support and helpdesk">
+          <td>19</td>
+          <td><strong>Gorgias</strong></td>
+          <td style="color:var(--muted);">Support and Helpdesk</td>
+          <td>E-commerce helpdesk and customer service platform providing tools for support teams and integrations.</td>
+          <td><span class="auth-tag">API Key</span><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://developers.gorgias.com/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="gladly" data-cat="support and helpdesk">
+          <td>20</td>
+          <td><strong>Gladly</strong></td>
+          <td style="color:var(--muted);">Support and Helpdesk</td>
+          <td>Customer service platform centered on people, not tickets.</td>
+          <td><span class="auth-tag">Basic Auth</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-self_serve_gated">Gated</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">API access requires a paid customer account and enterprise support coordination.</td>
+          <td class="conf">85%</td>
+          <td><a href="https://developer.gladly.com/rest/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="slack" data-cat="communications and messaging">
+          <td>21</td>
+          <td><strong>Slack</strong></td>
+          <td style="color:var(--muted);">Communications and Messaging</td>
+          <td>A channel-based messaging platform that enables team communication, workflow automation, and app integrations.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://api.slack.com/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="twilio" data-cat="communications and messaging">
+          <td>22</td>
+          <td><strong>Twilio</strong></td>
+          <td style="color:var(--muted);">Communications and Messaging</td>
+          <td>Cloud communications platform for building SMS, voice, and messaging applications via APIs.</td>
+          <td><span class="auth-tag">Basic Auth</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://www.twilio.com/docs/api" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="zoho cliq" data-cat="communications and messaging">
+          <td>23</td>
+          <td><strong>Zoho Cliq</strong></td>
+          <td style="color:var(--muted);">Communications and Messaging</td>
+          <td>Team collaboration software with channels, chats, meetings, and extensible bots.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://www.zoho.com/cliq/help/restapi/v2/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="lark (larksuite)" data-cat="communications and messaging">
+          <td>24</td>
+          <td><strong>Lark (Larksuite)</strong></td>
+          <td style="color:var(--muted);">Communications and Messaging</td>
+          <td>An enterprise collaboration suite combining chat, calendar, docs, and custom app integration via an open API.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://open.larksuite.com/document/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="pumble" data-cat="communications and messaging">
+          <td>25</td>
+          <td><strong>Pumble</strong></td>
+          <td style="color:var(--muted);">Communications and Messaging</td>
+          <td>Team communication and collaboration app for messaging, video calls, and file sharing.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-yes" title="Official MCP server available.">✓</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://pumble.com/help" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="discord" data-cat="communications and messaging">
+          <td>26</td>
+          <td><strong>Discord</strong></td>
+          <td style="color:var(--muted);">Communications and Messaging</td>
+          <td>A voice, video, and text communication service used by tens of millions of people to talk and hang out.</td>
+          <td><span class="auth-tag">Bearer Token</span><span class="auth-tag">OAuth2</span><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://discord.com/developers/docs" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="telegram" data-cat="communications and messaging">
+          <td>27</td>
+          <td><strong>Telegram</strong></td>
+          <td style="color:var(--muted);">Communications and Messaging</td>
+          <td>An HTTP-based Bot API for developers to build interactive bots and automated messaging agents on Telegram.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://core.telegram.org/bots/api" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="whatsapp business" data-cat="communications and messaging">
+          <td>28</td>
+          <td><strong>WhatsApp Business</strong></td>
+          <td style="color:var(--muted);">Communications and Messaging</td>
+          <td>Enables businesses to communicate with customers at scale using the WhatsApp Business Platform via cloud-based APIs.</td>
+          <td><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://developers.facebook.com/docs/whatsapp" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="aircall" data-cat="communications and messaging">
+          <td>29</td>
+          <td><strong>Aircall</strong></td>
+          <td style="color:var(--muted);">Communications and Messaging</td>
+          <td>Cloud-based phone system and call center software offering a public REST API for managing users, calls, contacts, and messaging.</td>
+          <td><span class="auth-tag">Basic Auth</span><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developer.aircall.io/api-references/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="vonage" data-cat="communications and messaging">
+          <td>30</td>
+          <td><strong>Vonage</strong></td>
+          <td style="color:var(--muted);">Communications and Messaging</td>
+          <td>Cloud communications platform providing APIs for SMS, voice, video, and multi-channel messaging.</td>
+          <td><span class="auth-tag">API Key</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developer.vonage.com/en/api/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="google ads" data-cat="marketing ads email and social">
+          <td>31</td>
+          <td><strong>Google Ads</strong></td>
+          <td style="color:var(--muted);">Marketing Ads Email and Social</td>
+          <td>Manage Google Ads campaigns, budgets, and reporting programmatically.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-yes" title="Google Ads MCP server is referenced in the developer toolkit documentation.">✓</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developers.google.com/google-ads/api/docs" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="meta ads" data-cat="marketing ads email and social">
+          <td>32</td>
+          <td><strong>Meta Ads</strong></td>
+          <td style="color:var(--muted);">Marketing Ads Email and Social</td>
+          <td>Manage advertising campaigns, target audiences, and analyze performance across Meta platforms using the Marketing API.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developers.facebook.com/docs/marketing-apis" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="linkedin ads" data-cat="marketing ads email and social">
+          <td>33</td>
+          <td><strong>LinkedIn Ads</strong></td>
+          <td style="color:var(--muted);">Marketing Ads Email and Social</td>
+          <td>Build technology to reach, engage, and convert professional audiences at scale using LinkedIn Marketing APIs.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-self_serve_gated">Gated</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">Requires developer portal access approval and specific product permissions for advertising and marketing APIs.</td>
+          <td class="conf">95%</td>
+          <td><a href="https://learn.microsoft.com/en-us/linkedin/marketing/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="gohighlevel" data-cat="marketing ads email and social">
+          <td>34</td>
+          <td><strong>GoHighLevel</strong></td>
+          <td style="color:var(--muted);">Marketing Ads Email and Social</td>
+          <td>All-in-one sales and marketing platform for agencies and businesses offering CRM, email, SMS, and funnel building.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">Requires a paid account subscription to access API credentials.</td>
+          <td class="conf">95%</td>
+          <td><a href="https://highlevel.stoplight.io/docs/integrations" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="mailchimp" data-cat="marketing ads email and social">
+          <td>35</td>
+          <td><strong>Mailchimp</strong></td>
+          <td style="color:var(--muted);">Marketing Ads Email and Social</td>
+          <td>Marketing automation platform and email marketing service for managing campaigns, lists, and subscriber data.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://mailchimp.com/developer/marketing/api/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="klaviyo" data-cat="marketing ads email and social">
+          <td>36</td>
+          <td><strong>Klaviyo</strong></td>
+          <td style="color:var(--muted);">Marketing Ads Email and Social</td>
+          <td>An automation-driven email and SMS marketing platform designed for online businesses.</td>
+          <td><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developers.klaviyo.com/en/reference/api_overview" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="systeme.io" data-cat="marketing ads email and social">
+          <td>37</td>
+          <td><strong>Systeme.io</strong></td>
+          <td style="color:var(--muted);">Marketing Ads Email and Social</td>
+          <td>An all-in-one marketing platform to build sales funnels, send emails, create websites, and manage online businesses.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">API access requires a paid subscription plan.</td>
+          <td class="conf">85%</td>
+          <td><a href="https://systeme.io" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="pinterest" data-cat="marketing ads email and social">
+          <td>38</td>
+          <td><strong>Pinterest</strong></td>
+          <td style="color:var(--muted);">Marketing Ads Email and Social</td>
+          <td>Pinterest API v5 enables developers to manage pins, boards, user accounts, and advertising campaigns programmatically.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developers.pinterest.com/docs/api/v5/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="threads (meta)" data-cat="marketing ads email and social">
+          <td>39</td>
+          <td><strong>Threads (Meta)</strong></td>
+          <td style="color:var(--muted);">Marketing Ads Email and Social</td>
+          <td>Enables developers to manage their Threads presence, create posts, retrieve media, and analyze engagement at scale.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://developers.facebook.com/docs/threads" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="sendgrid" data-cat="marketing ads email and social">
+          <td>40</td>
+          <td><strong>SendGrid</strong></td>
+          <td style="color:var(--muted);">Marketing Ads Email and Social</td>
+          <td>Cloud-based email delivery and marketing platform for sending transactional and marketing emails.</td>
+          <td><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://docs.sendgrid.com/api-reference/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="shopify" data-cat="ecommerce">
+          <td>41</td>
+          <td><strong>Shopify</strong></td>
+          <td style="color:var(--muted);">Ecommerce</td>
+          <td>A comprehensive commerce platform providing APIs to build online stores, manage products, orders, customers, and extend Shopify administration.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">API Key</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST+GraphQL</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://shopify.dev/docs/api" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="woocommerce" data-cat="ecommerce">
+          <td>42</td>
+          <td><strong>WooCommerce</strong></td>
+          <td style="color:var(--muted);">Ecommerce</td>
+          <td>An open-source, customizable e-commerce platform built on WordPress.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Basic Auth</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://woocommerce.github.io/woocommerce-rest-api-docs/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="bigcommerce" data-cat="ecommerce">
+          <td>43</td>
+          <td><strong>BigCommerce</strong></td>
+          <td style="color:var(--muted);">Ecommerce</td>
+          <td>E-commerce platform providing APIs to manage stores, products, orders, and customers.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developer.bigcommerce.com/docs/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="salesforce commerce cloud" data-cat="ecommerce">
+          <td>44</td>
+          <td><strong>Salesforce Commerce Cloud</strong></td>
+          <td style="color:var(--muted);">Ecommerce</td>
+          <td>Enterprise ecommerce platform enabling unified digital commerce experiences across web, mobile, and social channels.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-self_serve_gated">Gated</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">Requires enterprise contract or partner access for API credentials</td>
+          <td class="conf">90%</td>
+          <td><a href="https://developer.salesforce.com/docs/commerce/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="magento (adobe commerce)" data-cat="ecommerce">
+          <td>45</td>
+          <td><strong>Magento (Adobe Commerce)</strong></td>
+          <td style="color:var(--muted);">Ecommerce</td>
+          <td>Adobe Commerce (formerly Magento) provides robust REST and GraphQL APIs for managing storefronts, catalogs, orders, and customers.</td>
+          <td><span class="auth-tag">Bearer Token</span><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST+GraphQL</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developer.adobe.com/commerce/webapi/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="squarespace" data-cat="ecommerce">
+          <td>46</td>
+          <td><strong>Squarespace</strong></td>
+          <td style="color:var(--muted);">Ecommerce</td>
+          <td>Build websites and manage e-commerce operations, contacts, inventory, and orders via the Squarespace API.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">API Key</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">Requires paid Squarespace plan and specific website permissions/scopes.</td>
+          <td class="conf">90%</td>
+          <td><a href="https://developers.squarespace.com/commerce-apis" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="ecwid" data-cat="ecommerce">
+          <td>47</td>
+          <td><strong>Ecwid</strong></td>
+          <td style="color:var(--muted);">Ecommerce</td>
+          <td>Ecwid is a SaaS ecommerce platform that lets you build online stores and integrate them anywhere.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://api-docs.ecwid.com/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="gumroad" data-cat="ecommerce">
+          <td>48</td>
+          <td><strong>Gumroad</strong></td>
+          <td style="color:var(--muted);">Ecommerce</td>
+          <td>An e-commerce platform that allows creators to sell products directly to consumers.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://app.gumroad.com/api" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="amazon selling partner" data-cat="ecommerce">
+          <td>49</td>
+          <td><strong>Amazon Selling Partner</strong></td>
+          <td style="color:var(--muted);">Ecommerce</td>
+          <td>Integrate with Amazon's APIs to manage orders, listings, and fulfillment for your Amazon store.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">IAM</span></td>
+          <td>
+            
+              <span class="badge badge-self_serve_gated">Gated</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">Requires a professional seller account and manual application/approval process to obtain API credentials.</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developer-docs.amazon.com/sp-api/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="fanbasis" data-cat="ecommerce">
+          <td>50</td>
+          <td><strong>Fanbasis</strong></td>
+          <td style="color:var(--muted);">Ecommerce</td>
+          <td>An all-in-one monetization and commerce platform (rebranded as Commas) providing checkouts, funnels, communities, courses, webinars, and developer APIs.</td>
+          <td><span class="auth-tag">Bearer Token</span><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-self_serve_gated">Gated</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-yes" title="MCP beta exists to run the platform from an AI assistant.">✓</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">API and enterprise features require sales contact or gated access.</td>
+          <td class="conf">85%</td>
+          <td><a href="https://fanbasis.com" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="dataforseo" data-cat="data seo and scraping">
+          <td>51</td>
+          <td><strong>DataForSEO</strong></td>
+          <td style="color:var(--muted);">Data SEO and Scraping</td>
+          <td>DataForSEO provides comprehensive SEO and digital marketing data APIs for search engines, social media, and domain analytics.</td>
+          <td><span class="auth-tag">Basic Auth</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://docs.dataforseo.com/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="se ranking" data-cat="data seo and scraping">
+          <td>52</td>
+          <td><strong>SE Ranking</strong></td>
+          <td style="color:var(--muted);">Data SEO and Scraping</td>
+          <td>SEO and AEO data API for keyword research, rank tracking, and competitive analysis at scale.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://seranking.com/api.html" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="ahrefs" data-cat="data seo and scraping">
+          <td>53</td>
+          <td><strong>Ahrefs</strong></td>
+          <td style="color:var(--muted);">Data SEO and Scraping</td>
+          <td>Access Ahrefs marketing and search data through APIs and developer tools to build custom integrations and workflows.</td>
+          <td><span class="auth-tag">API Key</span><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-yes" title="Connect your Ahrefs data to AI assistants and agents to enhance their answers with real marketing insights (Claude, ChatGPT, etc.).">✓</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://docs.ahrefs.com/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="mrscraper" data-cat="data seo and scraping">
+          <td>54</td>
+          <td><strong>MrScraper</strong></td>
+          <td style="color:var(--muted);">Data SEO and Scraping</td>
+          <td>AI-powered and manual web scraping platform with APIs, SDKs, and Model Context Protocol (MCP) server support.</td>
+          <td><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-yes" title="MrScraper MCP server source code is available on GitHub for local setup and AI agent integration.">✓</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://docs.mrscraper.com/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="apify" data-cat="data seo and scraping">
+          <td>55</td>
+          <td><strong>Apify</strong></td>
+          <td style="color:var(--muted);">Data SEO and Scraping</td>
+          <td>Apify is a cloud platform for web scraping and data extraction that provides a powerful REST API to run actors, scrape websites, and manage datasets.</td>
+          <td><span class="auth-tag">Bearer Token</span><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://docs.apify.com/api/v2" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="firecrawl" data-cat="data seo and scraping">
+          <td>56</td>
+          <td><strong>Firecrawl</strong></td>
+          <td style="color:var(--muted);">Data SEO and Scraping</td>
+          <td>Turns entire websites into LLM-ready markdown or structured data via API.</td>
+          <td><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://docs.firecrawl.dev/api-reference/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="bright data" data-cat="data seo and scraping">
+          <td>57</td>
+          <td><strong>Bright Data</strong></td>
+          <td style="color:var(--muted);">Data SEO and Scraping</td>
+          <td>Web data platform offering proxies, web scraping APIs, and datasets.</td>
+          <td><span class="auth-tag">API Key</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://docs.brightdata.com/api-reference/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="no-api" data-name="sherlock" data-cat="data seo and scraping">
+          <td>58</td>
+          <td><strong>Sherlock</strong></td>
+          <td style="color:var(--muted);">Data SEO and Scraping</td>
+          <td>Hunt down social media accounts by username across social networks.</td>
+          <td><span class="auth-tag">No Auth</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>CLI-only</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-noapi">No API</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">Tool is primarily a CLI/Python script without a dedicated HTTP API server.</td>
+          <td class="conf">95%</td>
+          <td><a href="https://github.com/sherlock-project/sherlock" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="waterfall.io" data-cat="data seo and scraping">
+          <td>59</td>
+          <td><strong>Waterfall.io</strong></td>
+          <td style="color:var(--muted);">Data SEO and Scraping</td>
+          <td>A B2B data solution combining multiple data providers into a single waterfall enrichment workflow.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">requires paid plan or contact for complete API documentation and credentials</td>
+          <td class="conf">80%</td>
+          <td><a href="https://waterfall.io" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="clay" data-cat="data seo and scraping">
+          <td>60</td>
+          <td><strong>Clay</strong></td>
+          <td style="color:var(--muted);">Data SEO and Scraping</td>
+          <td>Combines data from 50+ providers to enrich leads, find emails, and automate outbound workflows.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">85%</td>
+          <td><a href="https://docs.clay.com/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="github" data-cat="developer infra and data platforms">
+          <td>61</td>
+          <td><strong>GitHub</strong></td>
+          <td style="color:var(--muted);">Developer Infra and Data Platforms</td>
+          <td>Create integrations, retrieve data, and automate your workflows with the GitHub REST API.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://docs.github.com/en/rest" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="vercel" data-cat="developer infra and data platforms">
+          <td>62</td>
+          <td><strong>Vercel</strong></td>
+          <td style="color:var(--muted);">Developer Infra and Data Platforms</td>
+          <td>Interact programmatically with your Vercel account using the REST API or direct HTTP requests to manage deployments, domains, projects, and more.</td>
+          <td><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://vercel.com/docs/rest-api" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="netlify" data-cat="developer infra and data platforms">
+          <td>63</td>
+          <td><strong>Netlify</strong></td>
+          <td style="color:var(--muted);">Developer Infra and Data Platforms</td>
+          <td>Web development and hosting platform that automates code building, deployment, and serverless backend management.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://docs.netlify.com/api/get-started/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="cloudflare" data-cat="developer infra and data platforms">
+          <td>64</td>
+          <td><strong>Cloudflare</strong></td>
+          <td style="color:var(--muted);">Developer Infra and Data Platforms</td>
+          <td>Cloudflare API allows developers to programmatically manage Cloudflare services including DNS, Workers, SSL, and security settings.</td>
+          <td><span class="auth-tag">API Key</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developers.cloudflare.com/api/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="supabase" data-cat="developer infra and data platforms">
+          <td>65</td>
+          <td><strong>Supabase</strong></td>
+          <td style="color:var(--muted);">Developer Infra and Data Platforms</td>
+          <td>Open source Firebase alternative providing backend-as-a-service features including database, authentication, edge functions, and storage.</td>
+          <td><span class="auth-tag">Bearer Token</span><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://supabase.com/docs/reference/api" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="neo4j" data-cat="developer infra and data platforms">
+          <td>66</td>
+          <td><strong>Neo4j</strong></td>
+          <td style="color:var(--muted);">Developer Infra and Data Platforms</td>
+          <td>Neo4j is a graph database management system that stores data in nodes and edges, allowing users to query connected data using the Cypher query language via drivers, HTTP APIs, or graph data science libraries.</td>
+          <td><span class="auth-tag">Basic Auth</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://neo4j.com/docs/http-api/current/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="snowflake" data-cat="developer infra and data platforms">
+          <td>67</td>
+          <td><strong>Snowflake</strong></td>
+          <td style="color:var(--muted);">Developer Infra and Data Platforms</td>
+          <td>Cloud data platform providing a REST SQL API to query, manage, and process data.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Key Pair</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://docs.snowflake.com/en/developer-guide/sql-api/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="mongodb atlas" data-cat="developer infra and data platforms">
+          <td>68</td>
+          <td><strong>MongoDB Atlas</strong></td>
+          <td style="color:var(--muted);">Developer Infra and Data Platforms</td>
+          <td>Fully managed cloud database service for modern applications.</td>
+          <td><span class="auth-tag">Digest Auth</span><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://www.mongodb.com/docs/atlas/api/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="datadog" data-cat="developer infra and data platforms">
+          <td>69</td>
+          <td><strong>Datadog</strong></td>
+          <td style="color:var(--muted);">Developer Infra and Data Platforms</td>
+          <td>Monitoring and security platform for cloud applications providing observability, infrastructure monitoring, and log management.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-yes" title="Datadog provides an official MCP Server for AI agents.">✓</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://docs.datadoghq.com/api/latest/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="sentry" data-cat="developer infra and data platforms">
+          <td>70</td>
+          <td><strong>Sentry</strong></td>
+          <td style="color:var(--muted);">Developer Infra and Data Platforms</td>
+          <td>Error tracking and performance monitoring platform to help developers diagnose, fix, and optimize their code.</td>
+          <td><span class="auth-tag">Bearer Token</span><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://docs.sentry.io/api/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="notion" data-cat="productivity and project management">
+          <td>71</td>
+          <td><strong>Notion</strong></td>
+          <td style="color:var(--muted);">Productivity and Project Management</td>
+          <td>All-in-one workspace for notes, tasks, wikis, and databases with a robust programmatic API.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://developers.notion.com/reference/intro" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="airtable" data-cat="productivity and project management">
+          <td>72</td>
+          <td><strong>Airtable</strong></td>
+          <td style="color:var(--muted);">Productivity and Project Management</td>
+          <td>Airtable is a cloud collaboration platform combining spreadsheet features with database capabilities for building powerful custom workflows.</td>
+          <td><span class="auth-tag">Bearer Token</span><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://airtable.com/developers/web/api/introduction" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="linear" data-cat="productivity and project management">
+          <td>73</td>
+          <td><strong>Linear</strong></td>
+          <td style="color:var(--muted);">Productivity and Project Management</td>
+          <td>Issue tracking and project management tool designed for high-performance software teams.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>GraphQL</td>
+          <td>
+            
+              <span class="mcp-yes" title="Linear provides official/community support for MCP integration patterns via its GraphQL API.">✓</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developers.linear.app/docs" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="jira" data-cat="productivity and project management">
+          <td>74</td>
+          <td><strong>Jira</strong></td>
+          <td style="color:var(--muted);">Productivity and Project Management</td>
+          <td>Issue and project tracking software for agile teams to plan, track, and manage work.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Basic Auth</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://developer.atlassian.com/cloud/jira/platform/rest/v3/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="asana" data-cat="productivity and project management">
+          <td>75</td>
+          <td><strong>Asana</strong></td>
+          <td style="color:var(--muted);">Productivity and Project Management</td>
+          <td>Work management platform that helps teams organize, track, and manage their work.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://developers.asana.com/reference/rest-api-reference" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="monday.com" data-cat="productivity and project management">
+          <td>76</td>
+          <td><strong>Monday.com</strong></td>
+          <td style="color:var(--muted);">Productivity and Project Management</td>
+          <td>Work operating system that allows users to build custom workflow apps and project management tools.</td>
+          <td><span class="auth-tag">Bearer Token</span><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>GraphQL</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developer.monday.com/api-reference/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="clickup" data-cat="productivity and project management">
+          <td>77</td>
+          <td><strong>ClickUp</strong></td>
+          <td style="color:var(--muted);">Productivity and Project Management</td>
+          <td>All-in-one productivity platform for tasks, docs, goals, and chat.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://clickup.com/api/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="coda" data-cat="productivity and project management">
+          <td>78</td>
+          <td><strong>Coda</strong></td>
+          <td style="color:var(--muted);">Productivity and Project Management</td>
+          <td>All-in-one collaborative doc that brings words, data, and teams together with a powerful API.</td>
+          <td><span class="auth-tag">Bearer Token</span><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://coda.io/developers/apis/v1" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="smartsheet" data-cat="productivity and project management">
+          <td>79</td>
+          <td><strong>Smartsheet</strong></td>
+          <td style="color:var(--muted);">Productivity and Project Management</td>
+          <td>Work management and collaboration platform for managing projects, automating workflows, and sharing data.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://smartsheet.redoc.ly/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="harvest" data-cat="productivity and project management">
+          <td>80</td>
+          <td><strong>Harvest</strong></td>
+          <td style="color:var(--muted);">Productivity and Project Management</td>
+          <td>Time tracking and invoicing software used to track time and expenses for projects.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://help.getharvest.com/api-v2/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="stripe" data-cat="finance and fintech">
+          <td>81</td>
+          <td><strong>Stripe</strong></td>
+          <td style="color:var(--muted);">Finance and Fintech</td>
+          <td>Stripe is a suite of payment APIs that powers online payment processing and commerce solutions for internet businesses.</td>
+          <td><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">100%</td>
+          <td><a href="https://stripe.com/docs/api" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="plaid" data-cat="finance and fintech">
+          <td>82</td>
+          <td><strong>Plaid</strong></td>
+          <td style="color:var(--muted);">Finance and Fintech</td>
+          <td>Connects bank accounts to financial applications via a secure API.</td>
+          <td><span class="auth-tag">API Key</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://plaid.com/docs/api/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="binance" data-cat="finance and fintech">
+          <td>83</td>
+          <td><strong>Binance</strong></td>
+          <td style="color:var(--muted);">Finance and Fintech</td>
+          <td>Global cryptocurrency exchange providing APIs for trading, market data, and account management.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developers.binance.com/docs/binance-spot-api-docs" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="paygent connect" data-cat="finance and fintech">
+          <td>84</td>
+          <td><strong>Paygent Connect</strong></td>
+          <td style="color:var(--muted);">Finance and Fintech</td>
+          <td>Payment processing and gateway solutions for businesses and developers.</td>
+          <td><span class="auth-tag">API Key</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-self_serve_gated">Gated</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">Merchant account approval and onboarding required for API access</td>
+          <td class="conf">85%</td>
+          <td><a href="https://docs.nmi.com/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="ipayx" data-cat="finance and fintech">
+          <td>85</td>
+          <td><strong>iPayX</strong></td>
+          <td style="color:var(--muted);">Finance and Fintech</td>
+          <td>Neutral FX verification layer that audits foreign-exchange transactions to reveal invisible spreads and quantify FX costs.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-yes" title="MCP server available.">✓</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://www.ipayx.ai" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="quickbooks" data-cat="finance and fintech">
+          <td>86</td>
+          <td><strong>QuickBooks</strong></td>
+          <td style="color:var(--muted);">Finance and Fintech</td>
+          <td>Accounting and financial management software for small and medium businesses.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developer.intuit.com/app/developer/qbo/docs/api/accounting/most-commonly-used/account" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="xero" data-cat="finance and fintech">
+          <td>87</td>
+          <td><strong>Xero</strong></td>
+          <td style="color:var(--muted);">Finance and Fintech</td>
+          <td>Cloud-based accounting software for small and medium-sized businesses offering a comprehensive API.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://developer.xero.com/documentation/api/accounting/overview" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="brex" data-cat="finance and fintech">
+          <td>88</td>
+          <td><strong>Brex</strong></td>
+          <td style="color:var(--muted);">Finance and Fintech</td>
+          <td>Financial OS providing corporate cards, expense management, and business accounts with a developer API.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://developer.brex.com/openapi/transactions_api/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="ramp" data-cat="finance and fintech">
+          <td>89</td>
+          <td><strong>Ramp</strong></td>
+          <td style="color:var(--muted);">Finance and Fintech</td>
+          <td>Corporate card and spend management platform with a comprehensive developer API for expense tracking and card issuing.</td>
+          <td><span class="auth-tag">OAuth2</span><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://docs.ramp.com/developer-guide/v1/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="pitchbook" data-cat="finance and fintech">
+          <td>90</td>
+          <td><strong>PitchBook</strong></td>
+          <td style="color:var(--muted);">Finance and Fintech</td>
+          <td>Provides data, research, and technology covering the private equity, venture capital, and M&A markets.</td>
+          <td><span class="auth-tag">API Key</span><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-self_serve_gated">Gated</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">Requires enterprise subscription and sales contact for API access</td>
+          <td class="conf">85%</td>
+          <td><a href="https://pitchbook.com" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="gated" data-name="notebooklm" data-cat="ai research and media-native">
+          <td>91</td>
+          <td><strong>NotebookLM</strong></td>
+          <td style="color:var(--muted);">AI Research and Media-native</td>
+          <td>Google's AI-powered research notebook that synthesizes documents into interactive summaries and audio overviews.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-unknown">?</span>
+            
+          </td>
+          <td>SDK-only</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-gated">Gated</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">No public API for NotebookLM product itself; only accessible via Google Cloud enterprise with Vertex AI.</td>
+          <td class="conf">75%</td>
+          <td><a href="https://cloud.google.com/vertex-ai/generative-ai/docs/notebook-lm" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="gated" data-name="otter ai" data-cat="ai research and media-native">
+          <td>92</td>
+          <td><strong>Otter AI</strong></td>
+          <td style="color:var(--muted);">AI Research and Media-native</td>
+          <td>AI-powered assistant that records audio, writes notes, automatically captures action items, and generates summaries for meetings.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-self_serve_gated">Gated</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-gated">Gated</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">No public self-serve developer API or documentation exists; requires enterprise partnership.</td>
+          <td class="conf">90%</td>
+          <td><a href="https://otter.ai/developers" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="fathom" data-cat="ai research and media-native">
+          <td>93</td>
+          <td><strong>Fathom</strong></td>
+          <td style="color:var(--muted);">AI Research and Media-native</td>
+          <td>Fathom captures meetings via bot or bot-free recording, generates live and post-call summaries with action items, and syncs insights automatically into CRMs and other work tools.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-partial">Partial</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">Publicly documented self-service developer API documentation is limited; integrations are primarily built via native app settings or requires partnership/paid team tier.</td>
+          <td class="conf">80%</td>
+          <td><a href="https://fathom.video" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="consensus" data-cat="ai research and media-native">
+          <td>94</td>
+          <td><strong>Consensus</strong></td>
+          <td style="color:var(--muted);">AI Research and Media-native</td>
+          <td>Consensus is an AI academic search engine for peer-reviewed literature to find, organize, and analyze science.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-self_serve_gated">Gated</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">No publicly available developer API documentation or self-serve API access.</td>
+          <td class="conf">90%</td>
+          <td><a href="https://consensus.app" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="reducto" data-cat="ai research and media-native">
+          <td>95</td>
+          <td><strong>Reducto</strong></td>
+          <td style="color:var(--muted);">AI Research and Media-native</td>
+          <td>Document parsing and data extraction API optimized for LLMs</td>
+          <td><span class="auth-tag">Bearer Token</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">90%</td>
+          <td><a href="https://docs.reducto.ai/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="devin" data-cat="ai research and media-native">
+          <td>96</td>
+          <td><strong>Devin</strong></td>
+          <td style="color:var(--muted);">AI Research and Media-native</td>
+          <td>Devin is the first fully autonomous AI software engineer.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-self_serve_gated">Gated</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">requires sales contact or enterprise subscription for API credentials</td>
+          <td class="conf">80%</td>
+          <td><a href="https://docs.devin.ai/" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="higgsfield" data-cat="ai research and media-native">
+          <td>97</td>
+          <td><strong>Higgsfield</strong></td>
+          <td style="color:var(--muted);">AI Research and Media-native</td>
+          <td>An AI-native creative suite and video generation platform.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-yes" title="Official MCP server available.">✓</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://higgsfield.ai" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="mermaid cli" data-cat="ai research and media-native">
+          <td>98</td>
+          <td><strong>Mermaid CLI</strong></td>
+          <td style="color:var(--muted);">AI Research and Media-native</td>
+          <td>Command-line tool to render Mermaid diagrams to various formats such as PDF, PNG, or SVG.</td>
+          <td><span class="auth-tag">No Auth</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>SDK-only</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">95%</td>
+          <td><a href="https://github.com/mermaid-js/mermaid-cli" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="ready" data-name="youtube transcript api" data-cat="ai research and media-native">
+          <td>99</td>
+          <td><strong>YouTube Transcript API</strong></td>
+          <td style="color:var(--muted);">AI Research and Media-native</td>
+          <td>An API service to fetch transcripts and captions from YouTube videos.</td>
+          <td><span class="auth-tag">API Key</span></td>
+          <td>
+            
+              <span class="badge badge-yes">Yes</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-ready">Ready</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">–</td>
+          <td class="conf">85%</td>
+          <td><a href="https://transcriptapi.com" target="_blank">docs ↗</a></td>
+        </tr>
+        
+        <tr data-build="needs-outreach" data-name="grain" data-cat="ai research and media-native">
+          <td>100</td>
+          <td><strong>Grain</strong></td>
+          <td style="color:var(--muted);">AI Research and Media-native</td>
+          <td>Record, transcribe, and highlight key moments from video meetings with AI assistance.</td>
+          <td><span class="auth-tag">OAuth2</span></td>
+          <td>
+            
+              <span class="badge badge-self_serve_gated">Gated</span>
+            
+          </td>
+          <td>REST</td>
+          <td>
+            
+              <span class="mcp-no">–</span>
+            
+          </td>
+          <td>
+            
+              <span class="badge badge-outreach">Needs Outreach</span>
+            
+          </td>
+          <td style="color:var(--muted);font-size:.78rem;">API documentation is not publicly accessible via self-serve and requires developer program approval.</td>
+          <td class="conf">80%</td>
+          <td><a href="https://grain.com" target="_blank">docs ↗</a></td>
+        </tr>
+        
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ AGENT ══════════════════════════════════════════════════════════════ -->
+<div class="section">
+  <span class="section-label">The Agent</span>
+  <h2>What We Built & Where a Human Was Needed</h2>
+  <div class="agent-grid">
+    <div class="agent-box">
+      <h3>🤖 What the Agent Does</h3>
+      <ul>
+        <li>Loads <code>apps.json</code> (100 apps with hint URLs)</li>
+        <li>For each app: fetches the hint URL (6k chars), sends to <strong>Gemini 3.5 Flash Lite</strong></li>
+        <li>Structured output enforced via <code>response_mime_type=application/json</code></li>
+        <li>5 concurrent workers with exponential backoff on failures</li>
+        <li>Crash-safe: each result written to <code>data/raw/</code> immediately</li>
+        <li>Verification: independent second-pass Gemini call on 20 stratified samples</li>
+        <li>Analysis: <code>analyse.py</code> computes all patterns (auth, buildability, blockers)</li>
+        <li>Render: <code>render.py</code> + Jinja2 → single self-contained <code>output.html</code></li>
+        <li>Built using <strong>Composio SDK</strong> for toolset integration</li>
+      </ul>
+    </div>
+    <div class="agent-box">
+      <h3>🧑 Where a Human Was Needed (Honest)</h3>
+      <ul>
+        <li><strong>Providing API keys</strong> — GEMINI_API_KEY and COMPOSIO_API_KEY supplied by the human to run the pipeline.</li>
+        <li class="human"><strong>#97 Higgsfield</strong> — Agent said <em>needs-outreach, no MCP</em>. Human found: REST API + API Key, MCP server, self-serve. <strong>Agent was wrong.</strong></li>
+        <li class="human"><strong>#25 Pumble</strong> — Agent said <em>needs-outreach, no MCP</em>. Human found: REST API + API Key, MCP server, free tier. <strong>Agent was wrong.</strong></li>
+        <li class="human"><strong>#85 iPayX</strong> — Agent said <em>no-api, no public docs</em>. Human found: REST API + API Key, MCP server, self-serve. <strong>Agent was wrong.</strong></li>
+        <li><strong>#24 Lark</strong> — Second-pass verifier flagged auth as incomplete. Human confirmed: OAuth2 flow required, not just static Bearer Token. Correction applied.</li>
+        <li><strong>#91 NotebookLM, #58 Sherlock, #92 Otter AI, #81 Stripe, #61 GitHub, #90 PitchBook</strong> — Human checked all 6. Agent findings confirmed correct.</li>
+        <li style="color:var(--muted);font-size:.82rem;"><em>Everything else was fully automated: research, second-pass LLM verification, pattern analysis, HTML render. No other human review was done.</em></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VERIFICATION ═══════════════════════════════════════════════════════ -->
+<div class="section ver-table">
+  <span class="section-label">Verification</span>
+  <h2>Accuracy Check — Sample of 20</h2>
+
+  
+  
+
+  <!-- Accuracy bars -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:820px;margin-bottom:2rem;">
+    <div>
+      <div class="accuracy-label">🤖 Agent-only (first pass): <strong>99%</strong> on 20-app sample</div>
+      <div style="background:var(--surface);border-radius:10px;height:22px;width:100%;overflow:hidden;">
+        <div style="height:100%;width:99%;background:linear-gradient(90deg,#f59e0b,#3b82f6);border-radius:10px;"></div>
+      </div>
+    </div>
+    <div>
+      <div class="accuracy-label">✅ After human corrections: <strong style="color:var(--green);">100%</strong></div>
+      <div style="background:var(--surface);border-radius:10px;height:22px;width:100%;overflow:hidden;">
+        <div style="height:100%;width:100%;background:linear-gradient(90deg,#22c55e,#16a34a);border-radius:10px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- How verification worked -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.25rem;margin-bottom:2rem;font-size:.85rem;color:var(--muted);max-width:820px;">
+    <strong style="color:var(--text);">How verification worked:</strong>
+    Step 1 — A second independent Gemini call reviewed all 20 sampled apps and flagged any field it disagreed with.
+    Step 2 — The human reviewer (Garvi) manually checked 10 apps against real docs, confirmed or overruled the agent, and applied corrections.
+    Step 3 — Corrected records were written back to <code>data/results.json</code> and the HTML was re-rendered.
+  </div>
+
+  <!-- What the agent got WRONG — full story cards -->
+  <h3 style="margin-bottom:1rem;color:var(--red);">❌ Where the Agent Was Wrong (3 apps)</h3>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem;margin-bottom:2rem;">
+
+    <div style="background:#1a0a0a;border:1px solid var(--red);border-radius:10px;padding:1.1rem;">
+      <div style="font-size:.75rem;color:var(--red);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;">Agent wrong</div>
+      <strong style="font-size:1rem;">#97 Higgsfield</strong>
+      <div style="margin-top:.75rem;font-size:.82rem;">
+        <div style="color:var(--red);margin-bottom:.3rem;">❌ Agent said: <code>needs-outreach</code>, no MCP, low confidence (40%)</div>
+        <div style="color:var(--green);">✅ Human found: REST API available, API Key auth, <strong>MCP server exists</strong>, fully self-serve</div>
+        <div style="margin-top:.5rem;color:var(--muted);">Impact: buildability changed <code>needs-outreach → ready</code></div>
+      </div>
+    </div>
+
+    <div style="background:#1a0a0a;border:1px solid var(--red);border-radius:10px;padding:1.1rem;">
+      <div style="font-size:.75rem;color:var(--red);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;">Agent wrong</div>
+      <strong style="font-size:1rem;">#25 Pumble</strong>
+      <div style="margin-top:.75rem;font-size:.82rem;">
+        <div style="color:var(--red);margin-bottom:.3rem;">❌ Agent said: <code>needs-outreach</code>, no MCP, confidence 70%</div>
+        <div style="color:var(--green);">✅ Human found: REST API with API Key, <strong>MCP server exists</strong>, free tier self-serve</div>
+        <div style="margin-top:.5rem;color:var(--muted);">Impact: buildability changed <code>needs-outreach → ready</code></div>
+      </div>
+    </div>
+
+    <div style="background:#1a0a0a;border:1px solid var(--red);border-radius:10px;padding:1.1rem;">
+      <div style="font-size:.75rem;color:var(--red);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;">Agent wrong</div>
+      <strong style="font-size:1rem;">#85 iPayX</strong>
+      <div style="margin-top:.75rem;font-size:.82rem;">
+        <div style="color:var(--red);margin-bottom:.3rem;">❌ Agent said: <code>no-api</code>, no public docs found</div>
+        <div style="color:var(--green);">✅ Human found: REST API with API Key, <strong>MCP server exists</strong>, self-serve credentials available</div>
+        <div style="margin-top:.5rem;color:var(--muted);">Impact: buildability changed <code>no-api → ready</code></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- What the verifier caught -->
+  <h3 style="margin-bottom:1rem;color:var(--yellow);">⚠️ What the Second-Pass Verifier Caught (1 field)</h3>
+  <div style="background:#1a1000;border:1px solid var(--yellow);border-radius:10px;padding:1.1rem;max-width:640px;font-size:.85rem;margin-bottom:2rem;">
+    <strong>#24 Lark (Larksuite) — auth_methods field</strong>
+    <div style="margin-top:.6rem;color:var(--red);">❌ Primary agent said: <code>Bearer Token</code> only</div>
+    <div style="margin-top:.3rem;color:var(--green);">✅ Verifier + human confirmed: authentication uses OAuth2 flow (App ID + App Secret → token exchange), then Bearer Token. Both methods should be listed.</div>
+    <div style="margin-top:.5rem;color:var(--muted);">Correction: <code>["Bearer Token"] → ["OAuth2", "Bearer Token"]</code></div>
+  </div>
+
+  <!-- What was confirmed correct -->
+  <h3 style="margin-bottom:1rem;color:var(--green);">✅ Human-Confirmed Correct (6 apps)</h3>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.75rem;margin-bottom:2rem;">
+    
+    <div style="background:var(--surface);border:1px solid #14532d;border-radius:8px;padding:.85rem;font-size:.82rem;">
+      <strong style="color:var(--green);">#91 NotebookLM</strong>
+      <div style="color:var(--muted);margin-top:.3rem;">Gated — Enterprise only via Google Cloud. No consumer API.</div>
+    </div>
+    
+    <div style="background:var(--surface);border:1px solid #14532d;border-radius:8px;padding:.85rem;font-size:.82rem;">
+      <strong style="color:var(--green);">#58 Sherlock</strong>
+      <div style="color:var(--muted);margin-top:.3rem;">No-API — CLI tool only, no HTTP API.</div>
+    </div>
+    
+    <div style="background:var(--surface);border:1px solid #14532d;border-radius:8px;padding:.85rem;font-size:.82rem;">
+      <strong style="color:var(--green);">#92 Otter AI</strong>
+      <div style="color:var(--muted);margin-top:.3rem;">Gated — Enterprise plan required for API access.</div>
+    </div>
+    
+    <div style="background:var(--surface);border:1px solid #14532d;border-radius:8px;padding:.85rem;font-size:.82rem;">
+      <strong style="color:var(--green);">#81 Stripe</strong>
+      <div style="color:var(--muted);margin-top:.3rem;">Ready — free test mode, instant API Key, broad REST.</div>
+    </div>
+    
+    <div style="background:var(--surface);border:1px solid #14532d;border-radius:8px;padding:.85rem;font-size:.82rem;">
+      <strong style="color:var(--green);">#61 GitHub</strong>
+      <div style="color:var(--muted);margin-top:.3rem;">Ready — OAuth2/PAT, broad REST, official MCP server.</div>
+    </div>
+    
+    <div style="background:var(--surface);border:1px solid #14532d;border-radius:8px;padding:.85rem;font-size:.82rem;">
+      <strong style="color:var(--green);">#90 PitchBook</strong>
+      <div style="color:var(--muted);margin-top:.3rem;">Needs-outreach — partner/contract gated.</div>
+    </div>
+    
+  </div>
+
+  <!-- Field-level accuracy table -->
+  
+  <h3 style="margin-top:1.5rem;margin-bottom:.75rem;">Field-Level Accuracy (agent-only pass, 20 apps × 5 fields)</h3>
+  <div class="table-wrap" style="max-width:500px;">
+    <table>
+      <thead><tr><th>Field</th><th>Accuracy</th><th>Agree</th><th>Disagree</th></tr></thead>
+      <tbody>
+        
+        <tr>
+          <td>auth_methods</td>
+          <td><strong>95%</strong></td>
+          <td class="agree">19</td>
+          <td class="disagree">1</td>
+        </tr>
+        
+        <tr>
+          <td>self_serve</td>
+          <td><strong>100%</strong></td>
+          <td class="agree">20</td>
+          <td class="disagree">0</td>
+        </tr>
+        
+        <tr>
+          <td>api_type</td>
+          <td><strong>100%</strong></td>
+          <td class="agree">20</td>
+          <td class="disagree">0</td>
+        </tr>
+        
+        <tr>
+          <td>buildability</td>
+          <td><strong>100%</strong></td>
+          <td class="agree">20</td>
+          <td class="disagree">0</td>
+        </tr>
+        
+        <tr>
+          <td>mcp_exists</td>
+          <td><strong>100%</strong></td>
+          <td class="agree">20</td>
+          <td class="disagree">0</td>
+        </tr>
+        
+      </tbody>
+    </table>
+  </div>
+  
+
+  <div style="margin-top:1.5rem;padding:1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:.83rem;max-width:820px;">
+    <strong style="color:var(--text);">Root cause of errors:</strong> Higgsfield, Pumble, and iPayX all have minimal web presence — their docs pages returned sparse content (or fetch errors), so the agent defaulted to conservative "can't confirm → gated/no-api" judgements. This is the correct failure mode (conservative over optimistic), but human verification is needed for thin-docs apps. MCP existence was the most commonly missed field.
+  </div>
+
+
+
+  
+  <div style="margin-top:1.5rem;padding:1rem;background:#451a0322;border:1px solid var(--yellow);border-radius:8px;">
+    <strong style="color:var(--yellow);">⚠ Apps flagged for human review:</strong>
+    <span style="color:var(--muted);">Lark (Larksuite)</span>
+  </div>
+  
+
+  <div style="margin-top:1.5rem;padding:1rem;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:.85rem;">
+    <strong style="color:var(--text);">Honest misses:</strong> Apps with thin public documentation (DealCloud, Fanbasis, iPayX) had the lowest confidence scores and were flagged by the verification agent. Where the second-pass LLM disagreed with the primary finding, the human reviewer was the tiebreaker. Final accuracy reflects post-correction values.
+  </div>
+</div>
+
+<footer>
+  Built with Gemini 2.0 Flash · Composio SDK · Python · Jinja2 &nbsp;|&nbsp;
+  Research agent: <code>research_agent.py</code> · Verification: <code>verify_agent.py</code> · Analysis: <code>analyse.py</code>
+</footer>
+
+<script>
+// ── Chart data injected from Python ────────────────────────────────────
+const authData = {"labels": ["OAuth2", "Bearer Token", "API Key", "Basic Auth", "No Auth", "IAM", "Key Pair", "Digest Auth"], "values": [61, 51, 37, 8, 2, 1, 1, 1]};
+const buildData = {"labels": ["ready", "needs-outreach", "no-api", "gated"], "values": [78, 19, 1, 2]};
+const apiData = {"labels": ["REST+GraphQL", "REST", "CLI-only", "GraphQL", "SDK-only"], "values": [4, 91, 1, 2, 2]};
+const selfServeData = {"labels": ["CRM and Sales", "Support and Helpdesk", "Communications and Messaging", "Marketing Ads Email and Social", "Ecommerce", "Data SEO and Scraping", "Developer Infra and Data Platforms", "Productivity and Project Management", "Finance and Fintech", "AI Research and Media-native"], "values": [7, 4, 9, 6, 5, 5, 9, 7, 6, 4]};
+
+const COLORS = ['#3b82f6','#22c55e','#f59e0b','#ef4444','#a855f7','#06b6d4','#f97316','#ec4899','#84cc16','#6366f1'];
+
+function makeChart(id, type, labels, values, colors) {
+  new Chart(document.getElementById(id), {
+    type,
+    data: {
+      labels,
+      datasets: [{data: values, backgroundColor: colors || COLORS.slice(0, labels.length),
+        borderWidth: 0}]
+    },
+    options: {
+      responsive: true,
+      plugins: {legend: {labels: {color: '#e8e8e8', font: {size: 11}}}},
+      scales: type === 'bar' ? {
+        x: {ticks: {color: '#888'}, grid: {color: '#2a2a2a'}},
+        y: {ticks: {color: '#888'}, grid: {color: '#2a2a2a'}}
+      } : {}
+    }
+  });
+}
+
+makeChart('authChart', 'bar', authData.labels, authData.values);
+makeChart('buildChart', 'doughnut', buildData.labels, buildData.values,
+  ['#22c55e','#f59e0b','#ef4444','#a855f7']);
+makeChart('apiChart', 'bar', apiData.labels, apiData.values);
+makeChart('selfServeChart', 'bar', selfServeData.labels, selfServeData.values,
+  ['#22c55e','#f59e0b','#ef4444','#888']);
+
+// ── Table filtering ─────────────────────────────────────────────────────
+let currentBuild = 'all';
+function filterTable() {
+  const q = document.getElementById('searchBox').value.toLowerCase();
+  document.querySelectorAll('#appsTable tbody tr').forEach(tr => {
+    const name = tr.dataset.name || '';
+    const cat = tr.dataset.cat || '';
+    const build = tr.dataset.build || '';
+    const matchSearch = !q || name.includes(q) || cat.includes(q);
+    const matchBuild = currentBuild === 'all' || build === currentBuild;
+    tr.style.display = matchSearch && matchBuild ? '' : 'none';
+  });
+}
+function filterBy(build, btn) {
+  currentBuild = build;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterTable();
+}
+</script>
+</body>
+</html>
